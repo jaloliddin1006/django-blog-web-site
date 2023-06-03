@@ -34,3 +34,33 @@ def article_create(request):
         else:return render(request, 'create.html', {'form':form})    
     else:return HttpResponse("Not allowed")
     
+    
+    
+    
+
+def article_update(request, id):
+    user = request.user
+    article = Article.objects.get(id=id)
+    if user == article.author:
+        form = ArticleForm(instance=article)
+        if request.method == "POST":
+            form = ArticleForm(instance=article, data=request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponse("OK")
+            else: return render(request, 'update.html', {'form':form, "article":article})
+        else: return render(request, 'update.html', {'form':form, 'article':article})
+    else:return HttpResponse("Not allowed")
+    
+    
+    
+
+def article_delete(request, id):
+    user = request.user
+    article = Article.objects.get(id=id)   
+    if user == article.author:
+        if request.method == "POST":
+            article.delete()
+            return HttpResponse("OK")
+        return render(request, 'delete.html', {"article":article})   
+    else:return HttpResponse("Not allowed")
